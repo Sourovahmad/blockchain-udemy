@@ -6,6 +6,7 @@ const { interface, bytecode } = require("../compile");
 
 let accounts;
 let inbox;
+let updatedMessage;
 
 beforeEach(async () => {
   accounts = await web3.eth.getAccounts();
@@ -24,9 +25,20 @@ describe("inbox", () => {
     assert.ok(inbox.options.address);
   });
 
-  it("has a default messgae", async () => {
-    const message = await inbox.methods.message().call();
+
+  it("set message", async () =>{
+      const updatedMessageHash = await inbox.methods.setMessage("a new message").call();
+      console.log("new messge hash", updatedMessageHash);
   })
+
+
+  it("sets and verifies message", async () => {
+    await inbox.methods.setMessage("a new message").send({ from: accounts[0] });
+    
+    const message = await inbox.methods.message().call();
+    
+    assert.equal(message, "a new hhhkhkhkj");
+  });
 
   
 
