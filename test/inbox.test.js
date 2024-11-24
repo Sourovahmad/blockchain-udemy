@@ -1,37 +1,33 @@
-const assert = require('assert');
-const ganache = require('ganache');
-const { Web3 } = require('web3');
+const assert = require("assert");
+const ganache = require("ganache");
+const { Web3 } = require("web3");
 const web3 = new Web3(ganache.provider()); // provider connect application with web3
+const { interface, bytecode } = require("../compile");
+
+let accounts;
+let inbox;
+
+beforeEach(async () => {
+  accounts = await web3.eth.getAccounts();
+
+  inbox = await new web3.eth.Contract(JSON.parse(interface))
+    .deploy({ data: bytecode, arguments: ["Hi there"] })
+    .send({ from: accounts[0], gas: "1000000" });
 
 
 
-
-class Car {
-    park(){
-        return "parked"    
-    }
-
-    run (){
-        return "running"
-    }
-}
-
-
-let car;
-
-beforeEach(() => {
-    car = new Car;
 });
 
-describe("car", ()=> {
+describe("inbox", () => {
 
-    it('can park', () =>{
-        assert.equal(car.park(), "parked");
-    });
+  it("has deployed", () => {
+    assert.ok(inbox.options.address);
+  });
 
-    it('can run', () =>{
-        assert.equal(car.run(), "running");
-    });
+  it("has a default messgae", async () => {
+    const message = await inbox.methods.message().call();
+  })
 
+  
 
-})
+});
